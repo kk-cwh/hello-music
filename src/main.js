@@ -7,7 +7,8 @@ import Vant from "vant";
 import APlayer from "@moefe/vue-aplayer";
 
 Vue.use(APlayer, {
-  defaultCover: "https://github.com/u3u.png"
+  defaultCover: "https://github.com/u3u.png",
+  productionTip: false
 });
 Vue.use(Vant);
 

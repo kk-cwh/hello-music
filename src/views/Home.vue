@@ -1,72 +1,96 @@
 <template>
-  <div class="home">
-    <aplayer :audio="audio"   :volume='0.8' ref="aplayer" :lrcType="1" />
+  <div class="about">
+    <div class="search-box">
+      <van-search v-model="keywords" placeholder="请输入搜索关键词" show-action @search="onSearch(0)">
+        <div slot="action" @click="onSearch(0)">搜索</div>
+      </van-search>
+    </div>
+    <div class="search-songs">
+      <van-list v-model="loading" :finished="finished" @load="onLoad">
+        <van-cell v-for="(song,index) in songs" :key="song.id+'_'+index" :label="song.artists" @click="addToSongs(song.id)">
+          <div slot="title" class="cell-song">
+            <div class="song-name">{{song.name}}</div>
+            <div class="song-artists">{{song.artists}}</div>
+          </div>
+
+          <van-icon slot="right-icon" name="play" class="van-cell__right-icon" />
+        </van-cell>
+      </van-list>
+    </div>
+    <aplayer :mini="false" :audio="audio" fixed :volume='0.8' ref="aplayer" :lrcType="1" />
 
   </div>
 </template>
-
 <script>
 import axios from "axios";
 export default {
   name: "home",
-  components: {},
   data() {
     return {
-      list: [
-        {
-          title: "secret base~君がくれたもの~",
-          artist: "Silent Siren",
-          src:
-            "http://m10.music.126.net/20181108144150/311a2e1871b3040b9c30b18c59ae14e2/ymusic/603f/2799/ea87/0ac26d0e219c049b2c5a12fd6be2826f.mp3",
-          pic: "https://moeplayer.b0.upaiyun.com/aplayer/secretbase.jpg",
-
-          lrc:
-            "[00:00.00] 作曲 : 黄家驹 [00:01.00] 作词 : 黄家驹 [00:17.88]今天我 [00:21.27]寒夜里看雪飘过 [00:24.34]怀著冷却了的心窝飘远方 [00:30.18]风雨里追赶 [00:33.36]雾里分不清影踪 [00:36.42]天空海阔你与我 [00:39.38]可会变 (三子:谁没在变) [00:42.86]多少次 [00:45.97]迎著冷眼与嘲笑 [00:49.22]从没有放弃过心中的理想 [00:55.11]一刹那恍惚 [00:58.34]若有所失的感觉 [01:01.48]不知不觉已变淡 [01:04.46]心里爱 (三子:谁明白我) [01:08.17]原谅我这一生不羁放纵爱自由 [01:14.79]也会怕有一天会跌倒 Hoo No [01:21.20]背弃了理想 [01:23.42]谁人都可以 [01:26.98]那会怕有一天只你共我 [01:41.84]今天我 [01:45.44]寒夜里看雪飘过 [01:48.79]怀著冷却了的心窝飘远方 [01:53.99]风雨里追赶 [01:57.76]雾里分不清影踪 [02:00.89]天空海阔你与我 [02:03.87]可会变 (三子:谁没在变) [02:07.22]原谅我这一生不羁放纵爱自由 [02:14.0]也会怕有一天会跌倒 Hoo No [02:20.56]背弃了理想 [02:22.77]谁人都可以 [02:26.61]那会怕有一天只你共我 Oh Yeah [03:07.24]仍然自由自我 [03:10.96]永远高唱我歌 [03:14.34]走遍千里 [03:18.61]原谅我这一生不羁放纵爱自由 [03:24.86]也会怕有一天会跌倒 Hoo No [03:31.52]背弃了理想 [03:33.86]谁人都可以 [03:37.20]那会怕有一天只你共我 [03:44.5]背弃了理想 [03:46.86]谁人都可以 [03:50.66]那会怕有一天只你共我 Oh Yeah [03:56.77](三子：)原谅我这一生不羁放纵爱自由 (Oh Yeah) [04:03.58]也会怕有一天会跌倒 (Oh…) [04:08.77]背弃了理想 [04:11.81]谁人都可以 (Woo…) [04:15.70]那会怕有一天只你共我 "
-        }
-      ],
-      audio: [
-        // {
-        //   name: "I Really Like You 西班牙语版（Cover Carly Rae Jepsen）",
-        //   artist: "熊子",
-        //   url: "http://pdacsgxq7.bkt.clouddn.com/mp3/mucho.mp3",
-        //   cover: 'http://p1.music.126.net/UhbkP71d9KTMsdNczCf2wA==/109951162986700564.jpg?param=300y300', // prettier-ignore
-        //   lrc: "http://pdacsgxq7.bkt.clouddn.com/lrc/mucho.lrc"
-        // }
-        // {
-        //   name: "Mermaid girl (Extended RRver.)",
-        //   artist: "森永真由美",
-        //   url: "http://pdacsgxq7.bkt.clouddn.com/mp3/mermaidgirl.mp3",
-        //   cover: 'http://p1.music.126.net/xXxBuZksld5HtovQxI1D0A==/3227066630258578.jpg?param=300y300', // prettier-ignore
-        //   lrc: "http://pdacsgxq7.bkt.clouddn.com/lrc/mermaidgirl.lrc"
-        // },
-        // {
-        //   name: "ヒビカセ",
-        //   artist: "れをる",
-        //   url: "http://pdacsgxq7.bkt.clouddn.com/mp3/hibikase.mp3",
-        //   cover: 'http://p1.music.126.net/cZPx3peGTuWEI_GaZB5CDg==/8892850045794893.jpg?param=300y300', // prettier-ignore
-        //   lrc: "http://pdacsgxq7.bkt.clouddn.com/lrc/hibikase.lrc"
-        // }
-      ],
-      music: {
-        title: "secret base~君がくれたもの~",
-        artist: "Silent Siren",
-        src:
-          "http://m10.music.126.net/20181108144150/311a2e1871b3040b9c30b18c59ae14e2/ymusic/603f/2799/ea87/0ac26d0e219c049b2c5a12fd6be2826f.mp3",
-        pic: "https://moeplayer.b0.upaiyun.com/aplayer/secretbase.jpg",
-
-        lrc:
-          "[00:00.00] 作曲 : 黄家驹 [00:01.00] 作词 : 黄家驹 [00:17.88]今天我 [00:21.27]寒夜里看雪飘过 [00:24.34]怀著冷却了的心窝飘远方 [00:30.18]风雨里追赶 [00:33.36]雾里分不清影踪 [00:36.42]天空海阔你与我 [00:39.38]可会变 (三子:谁没在变) [00:42.86]多少次 [00:45.97]迎著冷眼与嘲笑 [00:49.22]从没有放弃过心中的理想 [00:55.11]一刹那恍惚 [00:58.34]若有所失的感觉 [01:01.48]不知不觉已变淡 [01:04.46]心里爱 (三子:谁明白我) [01:08.17]原谅我这一生不羁放纵爱自由 [01:14.79]也会怕有一天会跌倒 Hoo No [01:21.20]背弃了理想 [01:23.42]谁人都可以 [01:26.98]那会怕有一天只你共我 [01:41.84]今天我 [01:45.44]寒夜里看雪飘过 [01:48.79]怀著冷却了的心窝飘远方 [01:53.99]风雨里追赶 [01:57.76]雾里分不清影踪 [02:00.89]天空海阔你与我 [02:03.87]可会变 (三子:谁没在变) [02:07.22]原谅我这一生不羁放纵爱自由 [02:14.0]也会怕有一天会跌倒 Hoo No [02:20.56]背弃了理想 [02:22.77]谁人都可以 [02:26.61]那会怕有一天只你共我 Oh Yeah [03:07.24]仍然自由自我 [03:10.96]永远高唱我歌 [03:14.34]走遍千里 [03:18.61]原谅我这一生不羁放纵爱自由 [03:24.86]也会怕有一天会跌倒 Hoo No [03:31.52]背弃了理想 [03:33.86]谁人都可以 [03:37.20]那会怕有一天只你共我 [03:44.5]背弃了理想 [03:46.86]谁人都可以 [03:50.66]那会怕有一天只你共我 Oh Yeah [03:56.77](三子：)原谅我这一生不羁放纵爱自由 (Oh Yeah) [04:03.58]也会怕有一天会跌倒 (Oh…) [04:08.77]背弃了理想 [04:11.81]谁人都可以 (Woo…) [04:15.70]那会怕有一天只你共我 "
-      }
+      songs: [],
+      loading: false,
+      finished: true,
+      keywords: "",
+      offset: 0,
+      songCount: 0,
+      audio: []
     };
   },
+  components: {},
   mounted() {
-    // setTimeout(() => {
-    //   this.$refs.aplayer.play();
-    // }, 10000);
-    var songId = this.$route.params.id ? this.$route.params.id : "554191055";
-    this.init(songId);
+    this.init(449818741);
   },
   methods: {
+    async onSearch(offset) {
+      if (offset === 0) {
+        this.offset = 0;
+        this.songs = [];
+      }
+      try {
+        const res1 = await axios({
+          method: "get",
+          url:
+            "https://music.zhangyake.site/search?keywords=" +
+            this.keywords +
+            "&offset=" +
+            this.offset
+        });
+
+        // console.log(res1.data.result.songs);
+        // console.log(res1.data.result.songCount);
+        this.songCount = res1.data.result.songCount;
+
+        res1.data.result.songs.forEach(item => {
+          this.songs.push({
+            id: item.id,
+            name: item.name,
+            artists:
+              item.artists.length > 1
+                ? item.artists.reduce((a, b) => {
+                    return a.name + "/ " + b.name;
+                  })
+                : item.artists.length === 1
+                  ? item.artists[0].name
+                  : ""
+          });
+        });
+        this.offset += 30;
+        this.loading = false;
+        this.songs.length === this.songCount
+          ? (this.finished = true)
+          : (this.finished = false);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    addToSongs(id) {
+      // console.log(id);
+      // this.$router.push({ name: "home", params: { id } });
+      this.init(id);
+    },
+    onLoad() {
+      this.onSearch(this.offset);
+    },
     async init(songId) {
       try {
         let music = {};
@@ -83,6 +107,7 @@ export default {
           url: "https://music.zhangyake.site/song/detail?ids=" + songId
         });
 
+        music.id = songId;
         music.url = res1.data.data[0].url;
         music.artist =
           res3.data.songs[0].ar.length > 1
@@ -95,9 +120,22 @@ export default {
         music.cover = res3.data.songs[0].al.picUrl;
         music.name = res3.data.songs[0].name;
         music.lrc = res2.data.lrc.lyric;
-        this.audio.push(music);
-        console.log(res2.data);
-        console.log(res3.data.songs[0]);
+
+        const arr = this.audio.filter(item => {
+          return +item.id === +songId;
+        });
+        if (arr && arr.length) {
+          this.$refs.aplayer.currentMusic = arr[0];
+          this.$refs.aplayer.play();
+        } else {
+          if (!music.url) {
+            this.$toast("歌曲无效!");
+          } else {
+            this.audio.push(music);
+            this.$refs.aplayer.currentMusic = music;
+            this.$refs.aplayer.play();
+          }
+        }
       } catch (err) {
         console.log(err);
       }
@@ -105,3 +143,35 @@ export default {
   }
 };
 </script>
+
+<style lang="less" scoped>
+.search-box {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+.search-songs {
+  margin-top: 48px;
+  .van-list {
+    height: 542px;
+    overflow-y: auto;
+  }
+}
+.cell-song {
+  width: 300px;
+  .song-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .song-artists {
+    font-size: 12px;
+    color: #929292;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+</style>
